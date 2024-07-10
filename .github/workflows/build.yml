@@ -63,6 +63,7 @@ jobs:
       - name: Save artifacts
         run: |
           mkdir -p ${{ github.workspace }}/artifacts
+          ls
           cp vips-8.14.5/build/*.deb ${{ github.workspace }}/artifacts
 
       - name: Create Release
