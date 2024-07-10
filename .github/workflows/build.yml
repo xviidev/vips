@@ -1,0 +1,62 @@
+name: Build libvips-dev
+
+on:
+  workflow_dispatch:
+  
+jobs:
+  build:
+    run-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Add the PPA for libcgif-dev, per https://github.com/lovell/cgif-packaging
+        run: |
+          sudo add-apt-repository ppa:lovell/cgif
+          sudo apt-get update
+          sudo apt-get install -y libcgif-dev
+        
+      - name: Install build tools
+        run: |
+          sudo apt update
+          sudo apt install -y \
+            build-essential \
+            ninja-build \
+            python3-pip \
+            bc \
+            wget
+          pip3 install meson
+          
+      - name: Install the dependencies
+        run: |
+          sudo apt install -y \
+            libfftw3-dev \
+            libopenexr-dev \
+            libgsf-1-dev \
+            libglib2.0-dev \
+            liborc-dev \
+            libopenslide-dev \
+            libmatio-dev \
+            libwebp-dev \
+            libjpeg-turbo8-dev \
+            libexpat1-dev \
+            libexif-dev \
+            libtiff5-dev \
+            libcfitsio-dev \
+            libpoppler-glib-dev \
+            librsvg2-dev \
+            libpango1.0-dev \
+            libopenjp2-7-dev \
+            liblcms2-dev \
+            libimagequant-dev
+      
+      - name: Compile VIPS
+        run: |
+          wget https://github.com/libvips/libvips/releases/download/v8.13.3/vips-8.13.3.tar.gz
+          tar xf vips-8.13.3.tar.gz
+          cd vips-8.13.3
+          meson setup build --libdir=lib --buildtype=release -Dintrospection=false
+          cd build
+          meson compile
+          meson test
+            
